@@ -11,7 +11,7 @@
   std::cout << "Tested successful" << std::endl;
 
 #define CHECK(expr) \
-  expr ? void : bad_check(expr);
+  expr ? good_check() : bad_check(#expr);
 
 #define START_TEST_MODULE(module_name) \
   std::cout << "Testing module : " << module_name << std::endl;
