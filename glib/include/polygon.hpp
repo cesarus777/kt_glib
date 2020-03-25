@@ -65,13 +65,10 @@ namespace mygeo
       double result = 0;
       for(size_t i = 0; i < size; ++i)
       {
-        double dist;
         if(i == 0)
-        {
           result += distance(vertices[0], vertices[size - 1]);
-        } else {
+        else
           result += distance(vertices[i - 1], vertices[i]);
-        }
       }
       return result;
     }
