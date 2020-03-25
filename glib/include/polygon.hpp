@@ -30,7 +30,7 @@ namespace mygeo
       vertices = points;
     }
 
-    Polygon(const std::vector<Line>& lines) : Shape()
+    Polygon(const std::vector<Line>& lines) : Shape(POLYGON)
     {
       for(size_t i = 0; i < lines.size(); ++i)
       {
