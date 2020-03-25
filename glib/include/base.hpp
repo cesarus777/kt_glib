@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <base_algorithm.hpp>
+#include <macro/math_macro.hpp>
 
 namespace mygeo
 {
@@ -26,12 +27,12 @@ namespace mygeo
 
     bool operator==(const Point &another) const
     {
-      return (x == another.x) && (y == another.y);
+      return (EQUAL(x, another.x)) && (EQUAL(y, another.y));
     }
 
     bool operator!=(const Point &another) const
     {
-      return (x != another.x) || (y != another.y);
+      return !(*this == another);
     }
 
   };
@@ -39,8 +40,8 @@ namespace mygeo
   class Line
   {
     Point a, b;
-    double length;
     double k;
+    double length;
   public:
     Line(Point p1, Point p2) : a(p1), b(p2)
     {
@@ -83,15 +84,15 @@ namespace mygeo
 
     Line(const Line& another) : a(another.start()),
                                 b(another.end()),
-                                length(another.len()),
-                                k(another.slope()) {}
+                                k(another.slope()),
+                                length(another.len()) {}
 
     Line& operator=(const Line& another)
     {
       a = another.start();
       b = another.end();
-      length = another.len();
       k = another.slope();
+      length = another.len();
       return *this;
     }
 
