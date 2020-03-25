@@ -3,6 +3,7 @@
 
 #include <base.hpp>
 #include <base_algorithm.hpp>
+#include <macro/math_macro.hpp>
 
 namespace mygeo
 {
@@ -10,7 +11,7 @@ namespace mygeo
   {
     double x = p1.x - p2.x;
     double y = p1.y - p2.y;
-    return sqrt(x * x - y * y);
+    return std::sqrt(x * x + y * y);
   }
 
   bool isPolygon(std::vector<Point> vertices)
@@ -43,51 +44,66 @@ namespace mygeo
         || (l1.end() == l2.start())   || (l1.end() == l2.end());
   }
 
+  Point intersect(Line l1, Line l2)
+  {
+    //l1 equals a*(x-x1)+b, l2 equals c*(x-x2)+d
+    double a = l1.slope();
+    double c = l2.slope();
+
+    if(EQUAL(a, c))
+      return Point(INFINITY, INFINITY);
+
+    double b = l1.start().y;
+    double d = l2.start().y;
+    double x1 = l1.start().x;
+    double x2 = l2.start().x;
+
+    if(a == INFINITY)
+      return Point(x1, c * (x1 - x2) + b);
+
+    if(c == INFINITY)
+      return Point(x2, a * (x2 - x1) + d);
+
+    double x_intersect = (d - b - c * x2 + a * x1) / (a - c);
+
+    double y_intersect = (a * d - b * c) / (a - c) + (x2 - x1) / (1.0 / a - 1.0 / c);
+
+    return Point(x_intersect, y_intersect);
+  }
+
   bool turn_left(Line l1, Line l2)
   {
     if(is_continuation(l1, l2) == false)
     {
       throw std::invalid_argument("Can't find turn direction : end of one line is not start of the second");
     }
-    return (l1.xlen() * l2.ylen() - l1.ylen() * l2.xlen()) > 0.0;
+    Point start = (l1.end() == intersect(l1, l2) ? l1.start() : l1.end());
+    Point end = (l2.end() == intersect(l1, l2) ? l2.start() : l2.end());
+    bool res = (((end.x - start.x) * l1.slope() + (start.y - end.y)) > 0.0);
+    if(start == l1.end())
+      res = !res;
+    return res;
+  }
+
+  bool belongs_to(Point p, Line l)
+  {
+    Point sp = l.start();
+    double k = (p.y - sp.y) / (p.x - sp.x);
+    if((EQUAL(l.slope(), k)) == false)
+      return false;
+    Point ep = l.end();
+    double dist1 = distance(p, sp);
+    double dist2 = distance(p, ep);
+    if((dist1 > l.len()) || (dist2 > l.len()))
+      return false;
+
+    return true;
   }
 
   bool are_intersected(Line l1, Line l2)
   {
-    //l1 equals a*x+b, l2 equals c*x+d
-    double a = l1.slope();
-    double c = l2.slope();
-
-    Point start_point1 = l1.start();
-    Point end_point1 = l1.end();
-    Point start_point2 = l2.start();
-    Point end_point2 = l2.end();
-
-    if((a != c) && ((start_point1 == start_point2) || (end_point1 == end_point2)))
-      return false;
-
-    double b = start_point1.y;
-    double d = start_point2.y;
-
-    double p1sy = b;
-    double p1ey = end_point1.y;
-    double p2sy = d;
-    double p2ey = end_point2.y;
-
-    if((a == c) && (((p1sy <= p2sy) && (p1sy >= p2ey)) || ((p2sy <= p1sy) && (p2sy >= p1ey))))
-      return false;
-
-    double x_intersec = (d - c) / (a - b);
-    if((((x_intersec < start_point1.x) && (x_intersec > end_point1.x)) ||
-       ((x_intersec < start_point1.x) && (x_intersec > end_point1.x))) == false)
-      return false;
-
-    double y_intersec = (a * d - b * c) / (a - b);
-    if((((y_intersec < start_point1.y) && (y_intersec > end_point1.y)) ||
-       ((y_intersec < start_point1.y) && (y_intersec > end_point1.y))) == false)
-      return false;
-
-    return true;
+    Point inter = intersect(l1, l2);
+    return belongs_to(inter, l1) && belongs_to(inter, l2);
   }
 
   Point line_mid(Point p1, Point p2)
