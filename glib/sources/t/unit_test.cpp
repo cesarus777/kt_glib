@@ -6,8 +6,6 @@
 #include <macro/math_macro.hpp>
 #include <macro/test.hpp>
 
-#define DEBUG
-
 void math_macro_cpp();
 void base_algorithm_cpp();
 
