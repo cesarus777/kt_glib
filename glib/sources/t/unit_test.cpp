@@ -289,6 +289,81 @@ void base_algorithm_cpp()
 
 
   {
+  START_TEST_CASE("mygeo::includes")
+  
+#ifdef CIN_TEST
+
+  size_t n_test;
+
+#ifdef MANUAL_TEST
+  n_test = 5;
+  std::cout << "Input " << n_test << " pairs of lines in the next order:\n\t"
+            << "p1.x p1.y p2.x p2.y p3.x p3.y p4.x p4.y verity, "
+            << "where p1 and p2 are start and end of the first line, "
+            << "p3 and p4 are start and end of the second line" << std::endl;
+#else
+  std::cin >> n_test;
+#endif
+
+  std::array<std::pair<mygeo::Line, mygeo::Line>, n_test> lines;
+  std::array<bool, n_test> bools;
+
+  for(size_t i = 0; i < n_test; ++i)
+  {
+    std::array<double, 8> coord;
+    for(auto elem : coord)
+      std::cin >> elem;
+    mygeo::Point p1(coord[0], coord[1]);
+    mygeo::Point p2(coord[2], coord[3]);
+    mygeo::Point p3(coord[4], coord[5]);
+    mygeo::Point p4(coord[6], coord[7]);
+    mygeo::Line l1(p1, p2);
+    mygeo::Line l2(p3, p4);
+    lines[i] = std::move(std::make_pair(l1, l2));
+    bool b;
+    std::cin >> b;
+    bools[i] = b;
+  }
+
+#else
+
+  constexpr size_t n_test = 5;
+
+  std::array<std::pair<mygeo::Line, mygeo::Line>, n_test> lines = {
+    std::make_pair( mygeo::Line(mygeo::Point(0.0, 0.0), mygeo::Point(2.0, 2.0)),
+                    mygeo::Line(mygeo::Point(2.0, 2.0), mygeo::Point(1.0, 1.0))),
+    std::make_pair( mygeo::Line(mygeo::Point(0.0, 0.0), mygeo::Point(1.0, 1.0)),
+                    mygeo::Line(mygeo::Point(1.0, 1.0), mygeo::Point(2.0, 2.0))),
+    std::make_pair( mygeo::Line(mygeo::Point(0.0, 0.0), mygeo::Point(1.0, 1.0)),
+                    mygeo::Line(mygeo::Point(0.0, 1.0), mygeo::Point(1.0, 0.0))),
+    std::make_pair( mygeo::Line(mygeo::Point(-1.0, -3.0), mygeo::Point(5.0, 3.0)),
+                    mygeo::Line(mygeo::Point(2.0, 0.0), mygeo::Point(3.5, 1.5))),
+    std::make_pair( mygeo::Line(mygeo::Point(2.0, -5.0), mygeo::Point(-9.0, 3.0)),
+                    mygeo::Line(mygeo::Point(2.0, 6.0), mygeo::Point(2.0, -1.0))),
+  };
+
+  constexpr std::array<bool, n_test> bools = {
+    true, false, false, true, false,
+  };
+#endif
+
+  for(size_t i = 0; i < n_test; ++i)
+  {
+    bool check_value = includes(lines[i].first, lines[i].second);
+
+#ifdef DEBUG
+    std::cout << check_value << " ?= " << bools[i] << std::endl;
+#endif
+
+    CHECK(check_value == bools[i])
+  }
+
+  END_TEST_CASE
+  }
+
+
+
+  {
   START_TEST_CASE("mygeo::intersect")
   
 #ifdef CIN_TEST
