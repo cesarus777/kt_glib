@@ -140,9 +140,76 @@ void base_algorithm_cpp()
 
 
 
+  {
   START_TEST_CASE("mygeo::isPolygon")
-  std::cout << "\x1b[1;5;31mMAMA_SPASI\x1b[0m" << std::endl;
+
+#ifdef CIN_TEST
+
+  size_t n_test;
+
+#ifdef MANUAL_INPUT
+  n_test = 5;
+  std::cout << "Input " << n_test << " sets of points in the next order:\n\t"
+            << "n p1.x p1.y p2.x p2.y ... pn.x pn.y verity\n"
+            << "..." << "..." << "..."
+            << "m p1.x p1.y p2.x p2.y ... pm.x pm.y, verity\n"
+            << "where n, ..., m are numbers of vertices of each polygon,"
+            << "and p1, ... pn/pm are vertices of each polygon" << std::endl;
+#else
+  std::cin >> n_test;
+#endif
+
+  std::vector<std::vector<mygeo::Point>, n_test> polygons;
+  std::array<bool, n_test> bools;
+
+  for(size_t i = 0; i < n_test; ++i)
+  {
+    size_t n_vert;
+    std::cin >> n_vert;
+    for(size_t j = 0; j < n_vert; ++j)
+    {
+      double x, y;
+      std::cin >> x >> y;
+      polygons[i].push_back(mygeo::Point(x, y));
+    }
+    bool b;
+    std::cin >> b;
+    bools[i] = b;
+  }
+
+#else
+
+  constexpr size_t n_test = 5;
+
+  std::vector<std::vector<mygeo::Point>> polygons = {
+    { mygeo::Point(0.0, 0.0), mygeo::Point(1.0, 1.0), mygeo::Point(2.0, 2.0) },
+    { mygeo::Point(0.0, 0.0), mygeo::Point(0.0, 1.0), mygeo::Point(1.0, 0.0) },
+    { mygeo::Point(0.0, 0.0), mygeo::Point(0.0, 1.0), mygeo::Point(1.0, 1.0),
+      mygeo::Point(1.0, 0.0) },
+    { mygeo::Point(0.0, 0.0), mygeo::Point(0.0, 1.0), mygeo::Point(1.0, 0.0),
+      mygeo::Point(1.0, 1.0) },
+    { mygeo::Point(0.0, 0.0), mygeo::Point(0.0, 1.0), mygeo::Point(1.0, 1.0),
+      mygeo::Point(1.5, 0.5), mygeo::Point(1.0, 0.0) },
+  };
+  constexpr std::array<bool, n_test> bools = {
+    false, true, true, false, true,
+  };
+
+#endif
+
+  for(size_t i = 0; i < n_test; ++i)
+  {
+    bool check_value = mygeo::isPolygon(polygons[i]);
+
+#ifdef DEBUG
+    std::cout << check_value << " ?= " << bools[i] << std::endl;
+#endif
+
+    CHECK(check_value == bools[i])
+  }
+
   END_TEST_CASE
+  }
 
 
 
