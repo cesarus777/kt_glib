@@ -31,7 +31,7 @@ namespace mygeo
         Line l2 = (j == 0) ? Line(vertices[j], vertices[size - 1])
                            : Line(vertices[j - 1], vertices[j]);
 
-        if(are_intersected(l1, l2))
+        if((are_intersected(l1, l2) && (is_continuation(l1, l2) == false)) || includes(l1, l2))
           return false;
       }
     }
@@ -88,9 +88,14 @@ namespace mygeo
   bool belongs_to(Point p, Line l)
   {
     Point sp = l.start();
-    double k = (p.y - sp.y) / (p.x - sp.x);
-    if((EQUAL(l.slope(), k)) == false)
-      return false;
+    if(p == sp)
+    {
+      return true;
+    } else {
+      double k = (p.y - sp.y) / (p.x - sp.x);
+      if((EQUAL(l.slope(), k)) == false)
+        return false;
+    }
     Point ep = l.end();
     double dist1 = distance(p, sp);
     double dist2 = distance(p, ep);
@@ -98,6 +103,12 @@ namespace mygeo
       return false;
 
     return true;
+  }
+
+  bool includes(Line l1, Line l2)
+  {
+    return (belongs_to(l2.start(), l1) && belongs_to(l2.end(), l1))
+        || (belongs_to(l1.start(), l2) && belongs_to(l1.end(), l2));
   }
 
   bool are_intersected(Line l1, Line l2)

@@ -24,6 +24,8 @@ namespace mygeo
 
   bool belongs_to(Point p, Line l);
 
+  bool includes(Line l1, Line l2);
+
   Point line_mid(Point p1, Point p2);
 
   Point line_mid(Line l);
