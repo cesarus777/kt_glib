@@ -10,6 +10,7 @@ add_library(ktglib-src OBJECT
 
 add_library(ktglib-test OBJECT
     glib/sources/t/unit_test.cpp
+    glib/include/t/unit_test.cpp
 )
 
 include_directories(glib/include)
