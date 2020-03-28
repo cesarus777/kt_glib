@@ -25,3 +25,7 @@
 #define END_TEST_SUBMODULE \
   std::cout << "\tTested successful" << std::endl;
 
+#define SUB_CHECK(expr) \
+  std::cout << "\t"; \
+  expr ? good_check() : bad_check(#expr);
+
