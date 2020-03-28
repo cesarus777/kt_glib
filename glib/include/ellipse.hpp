@@ -39,7 +39,7 @@ namespace mygeo
 
     double eccentricity() const
     {
-      return distance(x1, x2) / (2 * a);
+      return fdistance() / (2 * a);
     }
 
     Point center() const
@@ -49,15 +49,15 @@ namespace mygeo
 
     virtual double perimeter() const
     {
-      double d = distance(x1, x2);
+      double d = fdistance() / 2;
       double b = std::sqrt(a * a - d * d);
-      double q = std::sqrt((3 * a + b) * (a + 3 * b));
-      return my_math::pi * (3 * (a + b) - q);
+      double q = (a - b) * (a - b);
+      return 4 * (my_math::pi * a * b + q) / (a + b);
     }
 
     virtual double area() const
     {
-      double d = distance(x1, x2);
+      double d = fdistance() / 2;
       double b = std::sqrt(a * a - d * d);
       return my_math::pi * a * b;
     }
@@ -81,13 +81,20 @@ namespace mygeo
       if(another.get_type() != type)
         return false;
 
-      return (*this == another);
+      return isCongruentTo(another);;
     } 
 
     virtual bool isCongruentTo(const Ellipse& another) const
     {
       return (eccentricity() == another.eccentricity()) && (fdistance() == another.fdistance());
-    } 
+    }
+
+    virtual bool containsPoint(Point point) const
+    {
+      double d1 = distance(x1, point);
+      double d2 = distance(x2, point);
+      return (d1 + d2) <= (2 * a);
+    }
   };
 }
 
