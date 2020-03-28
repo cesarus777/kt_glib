@@ -4,6 +4,7 @@
 #include <macro/test.hpp>
 
 void test_sources();
+void test_includes();
 
 int main()
 {
@@ -12,5 +13,6 @@ int main()
 #endif
   std::fesetround(FE_TONEAREST);
   test_sources();
+  test_includes();
 }
 
